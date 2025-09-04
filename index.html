@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Momentos de Aprendizaje - Metodología a Distancia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --udc-blue: #1e3a8a;
+            --udc-light-blue: #3b82f6;
+            --udc-gold: #f59e0b;
+            --udc-dark: #1f2937;
+            --udc-gray: #6b7280;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .slide {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            background: linear-gradient(135deg, var(--udc-blue) 0%, var(--udc-light-blue) 100%);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .slide.active {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .slide-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            height: calc(100vh - 100px);
+            width: calc(100vw - 80px);
+            max-width: none;
+            overflow: hidden;
+            margin: auto;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .title-font {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+        
+        .subtitle-font {
+            font-family: 'Open Sans', sans-serif;
+            font-style: italic;
+            font-weight: 400;
+        }
+        
+        .body-font {
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 400;
+            text-align: justify;
+            line-height: 1.6;
+        }
+        
+        .nav-button {
+            transition: all 0.3s ease;
+            background: var(--udc-gold);
+            color: white;
+        }
+        
+        .nav-button:hover {
+            transform: scale(1.05);
+            background: #d97706;
+        }
+        
+        .progress-dot {
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        .progress-dot.active {
+            background: var(--udc-gold);
+            transform: scale(1.2);
+        }
+        
+        .icon-container {
+            background: linear-gradient(135deg, var(--udc-gold) 0%, #d97706 100%);
+            border-radius: 50%;
+            padding: 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        .slide-overlay {
+            background: linear-gradient(135deg, 
+                rgba(30, 58, 138, 0.9) 0%, 
+                rgba(59, 130, 246, 0.8) 50%, 
+                rgba(245, 158, 11, 0.1) 100%);
+        }
+        
+        .text-block {
+            max-width: 100%;
+            margin: 0 auto;
+            overflow-y: auto;
+            height: 100%;
+            padding-right: 5px;
+        }
+        
+        .text-block::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .text-block::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .text-block::-webkit-scrollbar-thumb {
+            background: rgba(245, 158, 11, 0.5);
+            border-radius: 10px;
+        }
+        
+        .text-block::-webkit-scrollbar-thumb:hover {
+            background: rgba(245, 158, 11, 0.8);
+        }
+        
+        .highlight-box {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--udc-gold);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+        }
+        
+        .fixed-image-container {
+            width: 350px;
+            height: 250px;
+            overflow: hidden;
+            border-radius: 1rem;
+            background-color: #f0f0f0;
+            flex-shrink: 0;
+        }
+        
+        .fixed-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .fixed-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            height: 100%;
+            width: 100%;
+        }
+        
+        .fixed-text-section {
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .fixed-image-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .info-box {
+            width: 100%;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+        
+        .tag {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        .concept-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid;
+        }
+        
+        .card-m1 { border-color: #3498db; }
+        .card-m2 { border-color: #2ecc71; }
+        .card-m3 { border-color: #e67e22; }
+        
+        .concept-title {
+            font-weight: 600;
+            color: var(--udc-dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .concept-desc {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .relations {
+            color: #666;
+            font-style: italic;
+        }
+        
+        .flow-step {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+        
+        .flow-step::after {
+            content: "↓";
+            position: absolute;
+            bottom: -1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            color: var(--udc-gold);
+        }
+        
+        .flow-step:last-child::after {
+            display: none;
+        }
+        
+        .step-m1 { border-top: 4px solid #3498db; }
+        .step-m2 { border-top: 4px solid #2ecc71; }
+        .step-m3 { border-top: 4px solid #e67e22; }
+        .step-result { border-top: 4px solid #009933; }
+        
+        .step-title {
+            font-weight: 600;
+            color: var(--udc-dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .step-desc {
+            color: #333;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .fixed-content-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto;
+            }
+            
+            .fixed-image-container {
+                width: 300px;
+                height: 220px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 overflow-hidden">
+    <!-- Slide 0: Introducción -->
+    <div class="slide active">
+        <div class="slide-overlay absolute inset-0"></div>
+        <div class="slide-content">
+            <div class="fixed-content-grid">
+                <!-- Contenido Principal -->
+                <div class="fixed-text-section">
+                    <div class="text-center lg:text-left">
+                        <div class="icon-container">
+                            <span class="text-4xl">📚</span>
+                        </div>
+                        <h1 class="title-font text-3xl text-gray-800 mb-4">Modelo Pedagógico</h1>
+                        <h2 class="subtitle-font text-2xl text-gray-600 mb-6">Universidad de Cartagena</h2>
+                    </div>
+                    
+                    <div class="text-block">
+                        <p class="body-font text-lg text-gray-700 mb-4">
+                            El modelo pedagógico de la Universidad de Cartagena entiende que el aprendizaje a distancia es un proceso dinámico y colaborativo que se desarrolla en tres momentos conectados entre sí. Esta presentación tiene la intención de mostrar visualmente cómo funciona este modelo, destacando los conceptos más importantes de cada etapa y las relaciones entre ellos.
+                        </p>
+                        
+                        <div class="highlight-box">
+                            <p class="body-font text-lg text-gray-700">
+                                Se busca mostrar cómo se integra el trabajo individual de cada estudiante, la colaboración con sus compañeros y la orientación de los tutores para construir un aprendizaje significativo y de alta calidad, que esté alineado con los estándares de excelencia académica de la institución.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="tag-container">
+                        <span class="tag bg-blue-100 text-blue-800">Proceso Dinámico</span>
+                        <span class="tag bg-blue-100 text-blue-800">Aprendizaje Colaborativo</span>
+                        <span class="tag bg-blue-100 text-blue-800">Excelencia Académica</span>
+                    </div>
+                </div>
+                
+                <!-- Visual -->
+                <div class="fixed-image-section">
+                    <div class="fixed-image-container">
+                        <img src="https://placehold.co/350x250/3b82f6/ffffff?text=Modelo+Pedagógico" alt="Modelo Pedagógico" class="fixed-image">
+                    </div>
+                    <div class="info-box bg-gradient-to-br from-blue-600 to-blue-800 text-white text-center">
+                        <h3 class="text-2xl font-bold mb-2">Tres Momentos</h3>
+                        <p class="text-lg opacity-90">Proceso Integrado</p>
+                        <p class="text-base opacity-80 mt-2">Aprendizaje Significativo</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 1: Momento 1 -->
+    <div class="slide">
+        <div class="slide-overlay absolute inset-0"></div>
+        <div class="slide-content">
+            <div class="fixed-content-grid">
+                <!-- Contenido Principal -->
+                <div class="fixed-text-section">
+                    <div class="text-center lg:text-left">
+                        <div class="icon-container">
+                            <span class="text-4xl">👤</span>
+                        </div>
+                        <h1 class="title-font text-3xl text-gray-800 mb-4">Momento 1</h1>
+                        <h2 class="subtitle-font text-2xl text-gray-600 mb-6">Aprendizaje Autónomo</h2>
+                    </div>
+                    
+                    <div class="text-block">
+                        <p class="body-font text-lg text-gray-700 mb-4">
+                            Fase inicial de estudio autónomo donde el estudiante, de manera responsable y disciplinada, se aproxima a los materiales de estudio. Es la base indispensable del proceso, aunque sujeta a posibles errores conceptuales que requieren validación posterior.
+                        </p>
+                        
+                        <div class="concept-card card-m1">
+                            <h3 class="concept-title">Estudio Autónomo</h3>
+                            <p class="concept-desc">Proceso de revisión, lectura crítica y análisis individual de contenidos.</p>
+                            <p class="relations">→ Se relaciona con la Autodisciplina → Genera el Protocolo Individual</p>
+                        </div>
+                        
+                        <div class="concept-card card-m1">
+                            <h3 class="concept-title">Protocolo Individual</h3>
+                            <p class="concept-desc">Producto tangible que sintetiza el aprendizaje inicial. Compuesto por Síntesis Conceptual y Módulo Crítico.</p>
+                            <p class="relations">→ Sirve como insumo fundamental para el trabajo del CIPAS</p>
+                        </div>
+                        
+                        <div class="concept-card card-m1">
+                            <h3 class="concept-title">Autodisciplina y Gestión del Tiempo</h3>
+                            <p class="concept-desc">Habilidades metacognitivas esenciales para garantizar la efectividad del Estudio Autónomo.</p>
+                            <p class="relations">→ Base para el éxito en la modalidad a distancia</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tag-container">
+                        <span class="tag bg-blue-100 text-blue-800">Construcción Inicial</span>
+                        <span class="tag bg-blue-100 text-blue-800">Autonomía</span>
+                        <span class="tag bg-blue-100 text-blue-800">Responsabilidad</span>
+                    </div>
+                </div>
+                
+                <!-- Visual -->
+                <div class="fixed-image-section">
+                    <div class="fixed-image-container">
+                        <img src="https://placehold.co/350x250/3498db/ffffff?text=Autoaprendizaje" alt="Autoaprendizaje Autónomo" class="fixed-image">
+                    </div>
+                    <div class="info-box bg-gradient-to-br from-blue-600 to-blue-800 text-white text-center">
+                        <h3 class="text-2xl font-bold mb-2">Base del Proceso</h3>
+                        <p class="text-lg opacity-90">Estudio Individual</p>
+                        <p class="text-base opacity-80 mt-2">Construcción Inicial</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 2: Momento 2 -->
+    <div class="slide">
+        <div class="slide-overlay absolute inset-0"></div>
+        <div class="slide-content">
+            <div class="fixed-content-grid">
+                <!-- Contenido Principal -->
+                <div class="fixed-text-section">
+                    <div class="text-center lg:text-left">
+                        <div class="icon-container">
+                            <span class="text-4xl">👥</span>
+                        </div>
+                        <h1 class="title-font text-3xl text-gray-800 mb-4">Momento 2</h1>
+                        <h2 class="subtitle-font text-2xl text-gray-600 mb-6">Aprendizaje Colaborativo</h2>
+                    </div>
+                    
+                    <div class="text-block">
+                        <p class="body-font text-lg text-gray-700 mb-4">
+                            En esta etapa, los miembros del Grupo CIPAS (Circuito de Integración Pedagógica, Académica y Social) se reúnen para compartir y discutir sus conocimientos personales. A través del intercambio con sus compañeros, cada uno puede enriquecer, confirmar y mejorar lo que ha aprendido.
+                        </p>
+                        
+                        <div class="concept-card card-m2">
+                            <h3 class="concept-title">Socialización del Saber</h3>
+                            <p class="concept-desc">Momento en que los estudiantes comparten y discuten sus Protocolos Individuales.</p>
+                            <p class="relations">→ Requiere Habilidades Blandas → Logra la Validación Horizontal</p>
+                        </div>
+                        
+                        <div class="concept-card card-m2">
+                            <h3 class="concept-title">Validación Horizontal</h3>
+                            <p class="concept-desc">Proceso de contratación y negociación de significados entre compañeros de igual nivel.</p>
+                            <p class="relations">→ Resuelve dudas del primer momento → Genera el Protocolo Colaborativo</p>
+                        </div>
+                        
+                        <div class="concept-card card-m2">
+                            <h3 class="concept-title">Protocolo Colaborativo</h3>
+                            <p class="concept-desc">Síntesis grupal que objetiva el conocimiento construido colectivamente.</p>
+                            <p class="relations">→ Refleja el consenso alcanzado → Expone dudas persistentes</p>
+                        </div>
+                        
+                        <div class="concept-card card-m2">
+                            <h3 class="concept-title">Habilidades Blandas</h3>
+                            <p class="concept-desc">Competencias como comunicación asertiva, respeto, tolerancia y argumentación.</p>
+                            <p class="relations">→ Esenciales para el funcionamiento efectivo del CIPAS</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tag-container">
+                        <span class="tag bg-green-100 text-green-800">Validación Horizontal</span>
+                        <span class="tag bg-green-100 text-green-800">CIPAS</span>
+                        <span class="tag bg-green-100 text-green-800">Trabajo en Equipo</span>
+                    </div>
+                </div>
+                
+                <!-- Visual -->
+                <div class="fixed-image-section">
+                    <div class="fixed-image-container">
+                        <img src="https://placehold.co/350x250/2ecc71/ffffff?text=Aprendizaje+Colaborativo" alt="Aprendizaje Colaborativo" class="fixed-image">
+                    </div>
+                    <div class="info-box bg-gradient-to-br from-green-600 to-green-800 text-white text-center">
+                        <h3 class="text-2xl font-bold mb-2">Validación entre Pares</h3>
+                        <p class="text-lg opacity-90">Intercambio de Conocimientos</p>
+                        <p class="text-base opacity-80 mt-2">Construcción Colectiva</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 3: Momento 3 -->
+    <div class="slide">
+        <div class="slide-overlay absolute inset-0"></div>
+        <div class="slide-content">
+            <div class="fixed-content-grid">
+                <!-- Contenido Principal -->
+                <div class="fixed-text-section">
+                    <div class="text-center lg:text-left">
+                        <div class="icon-container">
+                            <span class="text-4xl">👨‍🏫</span>
+                        </div>
+                        <h1 class="title-font text-3xl text-gray-800 mb-4">Momento 3</h1>
+                        <h2 class="subtitle-font text-2xl text-gray-600 mb-6">Tutoría</h2>
+                    </div>
+                    
+                    <div class="text-block">
+                        <p class="body-font text-lg text-gray-700 mb-4">
+                            Fase final de complementación, validación académica y certificación del aprendizaje. Guiados por el tutor, los estudiantes abordan las dificultades residuales, profundizan en el conocimiento y alcanzan una síntesis final avalada por la autoridad académica.
+                        </p>
+                        
+                        <div class="concept-card card-m3">
+                            <h3 class="concept-title">Validación Vertical</h3>
+                            <p class="concept-desc">Proceso de clarificación y aval del conocimiento a cargo del tutor.</p>
+                            <p class="relations">→ Toma como base el Protocolo Colaborativo → Genera el Protocolo Tutorial</p>
+                        </div>
+                        
+                        <div class="concept-card card-m3">
+                            <h3 class="concept-title">Protocolo Tutorial (Tutoría)</h3>
+                            <p class="concept-desc">Síntesis final, enriquecida y certificada del tema abordado.</p>
+                            <p class="relations">→ Resultado de la Validación Vertical → Conclusión del ciclo</p>
+                        </div>
+                        
+                        <div class="concept-card card-m3">
+                            <h3 class="concept-title">Rol del Tutor</h3>
+                            <p class="concept-desc">Actúa como facilitador, orientador y validador del conocimiento.</p>
+                            <p class="relations">→ Promueve debate ordenado → Certifica la calidad del aprendizaje</p>
+                        </div>
+                        
+                        <div class="concept-card card-m3">
+                            <h3 class="concept-title">Pensamiento Crítico</h3>
+                            <p class="concept-desc">Habilidad que se ejercita y consolida mediante el debate argumentado.</p>
+                            <p class="relations">→ Requisito y resultado de una tutoría exitosa</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tag-container">
+                        <span class="tag bg-orange-100 text-orange-800">Validación Vertical</span>
+                        <span class="tag bg-orange-100 text-orange-800">Certificación</span>
+                        <span class="tag bg-orange-100 text-orange-800">Orientación Experta</span>
+                    </div>
+                </div>
+                
+                <!-- Visual -->
+                <div class="fixed-image-section">
+                    <div class="fixed-image-container">
+                        <img src="https://placehold.co/350x250/e67e22/ffffff?text=Tutoría" alt="Tutoría" class="fixed-image">
+                    </div>
+                    <div class="info-box bg-gradient-to-br from-orange-600 to-orange-800 text-white text-center">
+                        <h3 class="text-2xl font-bold mb-2">Validación Académica</h3>
+                        <p class="text-lg opacity-90">Orientación del Tutor</p>
+                        <p class="text-base opacity-80 mt-2">Certificación del Aprendizaje</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide 4: Conclusión -->
+    <div class="slide">
+        <div class="slide-overlay absolute inset-0"></div>
+        <div class="slide-content">
+            <div class="fixed-content-grid">
+                <!-- Contenido Principal -->
+                <div class="fixed-text-section">
+                    <div class="text-center lg:text-left">
+                        <div class="icon-container">
+                            <span class="text-4xl">🏆</span>
+                        </div>
+                        <h1 class="title-font text-3xl text-gray-800 mb-4">Conclusión</h1>
+                        <h2 class="subtitle-font text-2xl text-gray-600 mb-6">El Viaje del Aprendizaje</h2>
+                    </div>
+                    
+                    <div class="text-block">
+                        <p class="body-font text-lg text-gray-700 mb-4">
+                            Este recorrido por los tres momentos nos muestra que aprender en la Universidad de Cartagena va mucho más allá de estudiar solo. Es un viaje que empezamos con nuestro propio esfuerzo, enriquecemos al compartir con nuestros compañeros y culminamos con la guía certera de nuestros tutores.
+                        </p>
+                        
+                        <div class="flow-step step-m1">
+                            <h3 class="step-title">Momento Individual</h3>
+                            <p class="step-desc">Nos fortalece como estudiantes autónomos y responsables</p>
+                        </div>
+                        
+                        <div class="flow-step step-m2">
+                            <h3 class="step-title">Momento Colaborativo</h3>
+                            <p class="step-desc">Nos enseña a crecer juntos, escuchando y construyendo en equipo</p>
+                        </div>
+                        
+                        <div class="flow-step step-m3">
+                            <h3 class="step-title">Momento Tutoría</h3>
+                            <p class="step-desc">Nos da certeza académica y resuelve dudas finales</p>
+                        </div>
+                        
+                        <div class="flow-step step-result">
+                            <h3 class="step-title">Resultado Final</h3>
+                            <p class="step-desc">Aprendizaje significativo y de alta calidad</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tag-container">
+                        <span class="tag bg-blue-100 text-blue-800">Integración</span>
+                        <span class="tag bg-blue-100 text-blue-800">Excelencia</span>
+                        <span class="tag bg-blue-100 text-blue-800">Calidad Académica</span>
+                    </div>
+                </div>
+                
+                <!-- Visual -->
+                <div class="fixed-image-section">
+                    <div class="fixed-image-container">
+                        <img src="https://placehold.co/350x250/3b82f6/ffffff?text=Ciclo+de+Aprendizaje" alt="Ciclo de Aprendizaje" class="fixed-image">
+                    </div>
+                    <div class="info-box bg-gradient-to-br from-blue-600 to-blue-800 text-white text-center">
+                        <h3 class="text-2xl font-bold mb-2">Ciclo Completo</h3>
+                        <p class="text-lg opacity-90">Proceso Integrado</p>
+                        <p class="text-base opacity-80 mt-2">Aprendizaje Significativo</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation Controls -->
+    <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 flex items-center space-x-4 z-50">
+        <!-- Previous Button -->
+        <button id="prevBtn" class="nav-button p-3 rounded-full shadow-lg transition-all duration-300">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </button>
+        <!-- Progress Indicators -->
+        <div class="flex space-x-2 bg-white bg-opacity-20 backdrop-blur-sm rounded-full px-3 py-1">
+            <div class="progress-dot active w-3 h-3 rounded-full cursor-pointer" data-slide="0"></div>
+            <div class="progress-dot w-3 h-3 rounded-full cursor-pointer" data-slide="1"></div>
+            <div class="progress-dot w-3 h-3 rounded-full cursor-pointer" data-slide="2"></div>
+            <div class="progress-dot w-3 h-3 rounded-full cursor-pointer" data-slide="3"></div>
+            <div class="progress-dot w-3 h-3 rounded-full cursor-pointer" data-slide="4"></div>
+        </div>
+        <!-- Next Button -->
+        <button id="nextBtn" class="nav-button p-3 rounded-full shadow-lg transition-all duration-300">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+        </button>
+    </div>
+    
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const progressDots = document.querySelectorAll('.progress-dot');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            progressDots[currentSlide].classList.remove('active');
+            
+            currentSlide = (n + totalSlides) % totalSlides;
+            
+            slides[currentSlide].classList.add('active');
+            progressDots[currentSlide].classList.add('active');
+        }
+        
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+        
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+        
+        // Event listeners
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+        
+        // Progress dot navigation
+        progressDots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                showSlide(index);
+            });
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                showSlide(0);
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                showSlide(totalSlides - 1);
+            }
+        });
+    </script>
+</body>
+</html>
